@@ -1,4 +1,4 @@
-package qc.cs355.application;
+package qc.cs355.application.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;

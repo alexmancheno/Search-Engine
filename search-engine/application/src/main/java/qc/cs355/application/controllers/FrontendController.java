@@ -1,4 +1,4 @@
-package qc.cs355.application;
+package qc.cs355.application.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +16,7 @@ public class FrontendController
     @GetMapping("/")
     public String greeting()
     {
-        System.out.println("hey!!");
+        System.out.println("hey!!!!!!!!");
         return "index";
     }
 }

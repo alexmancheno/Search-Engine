@@ -8,14 +8,15 @@
 cd backend/backend
 ```
 
-2. Compile the Maven project
+2. Compile the Maven project and run it:
 ```
 mvn clean package
+java -jar target/backend-0.1.jar
 ```
 
-3. Run
+Alternatively, you can run the `mvn exec` plugin (faster):
 ```
-java -jar target/backend-0.1.jar
+mvn exec:java
 ```
 
 #### Deploying to server

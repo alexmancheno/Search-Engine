@@ -30,11 +30,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- For Spring MVC controllers to send back HTML -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
 		<!-- Use MySQL Connector-J -->
@@ -70,8 +75,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
-
-
 </project>

@@ -35,6 +35,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Use MySQL Connector-J -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
 	</dependencies>
 
 	<build>
@@ -45,6 +52,8 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	
 
 
 </project>

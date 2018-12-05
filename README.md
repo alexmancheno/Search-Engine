@@ -42,7 +42,7 @@ scp ./target/engine-0.1.jar root@phatsearch.net:/root/applications/Search-Engine
 
 3. Restart the jar file (while logged into server)
 ```
-service search-engine-backend restart
+service search-engine restart
 ```
 
 4. Test (while logged into server)

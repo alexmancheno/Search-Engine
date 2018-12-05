@@ -1,0 +1,30 @@
+import java.util.HashMap;
+import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+public class Main {
+
+	public static void main(String[] argv) {
+		Callable<Vector<URLAndKeywords>> callable = 
+				new pWebCrawler("https://venus.cs.qc.cuny.edu/~face2897/cs355/index.html", 3);
+		
+		ExecutorService exec = Executors.newFixedThreadPool(1);
+		Future<Vector<URLAndKeywords>> future = exec.submit(callable);
+		
+		try {
+			Vector<URLAndKeywords> results = future.get();
+			for(URLAndKeywords UAK : results) {
+				System.out.println("URL :" + UAK.url);
+				HashMap<String, Integer> keyFreqPairs = UAK.keywords;
+				keyFreqPairs.forEach((key, value) -> System.out.println("Key: " + key + ", Frequency: " + value));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		exec.shutdown();
+	}
+}

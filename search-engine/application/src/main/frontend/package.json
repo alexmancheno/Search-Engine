@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "main": "index.js",
+  "main": "src",
   "dependencies": {
     "@babel/preset-react": "^7.0.0",
     "babel-core": "^6.26.3",
@@ -22,8 +22,8 @@
     "webpack-dev-server": "^3.1.10"
   },
   "scripts": {
-    "start": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production"
+    "start": "webpack-dev-server --mode development --open --watch-content-base ./src/index.js",
+    "build": "webpack --mode production --output ./../resources/static/bundle.js"
   },
   "eslintConfig": {
     "extends": "react-app"

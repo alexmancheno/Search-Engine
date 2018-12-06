@@ -51,13 +51,20 @@ curl localhost:8080
 ```
 
 ### Frontend
+**Note:** The frontend is using Bootstrap 4. Please only use Bootstrap 4!
+
 #### How to run
 1. Change into the root directory of the frontend
 ```
 cd search-engine/application/src/main/frontend
 ```
 
-2. Run and go to localhost:8080 (or 8081):
+2. Install the dependencies
+```
+npm install
+```
+
+3. Run and go to localhost:8080 (or 8081):
 ```
 npm run start
 ```

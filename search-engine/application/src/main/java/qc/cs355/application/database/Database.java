@@ -15,9 +15,13 @@ import qc.cs355.application.webcrawler.URLAndKeywords;
 // or you will have problems!
 
 public class Database {
+    
+    
     static String host      = "jdbc:mysql://localhost:3306/phatsearch";
     static String user      = "root";
     static String pass      = "SomeRootPass098";
+
+
 
     public static void test() {
         Connection conn = null;
@@ -42,77 +46,36 @@ public class Database {
         
     }
 
-    public static void showAllDataInTest(){
-        Connection conn = null;
-        PreparedStatement stmnt = null;
-        ResultSet result = null;
-        try{
-            conn = DriverManager.getConnection(host, user, pass);
-            stmnt = conn.prepareStatement("SELECT * from strings");
-            result = stmnt.executeQuery();
-            while(result.next()){
-                System.out.println(result.getString("idstring") + ": " + result.getString("string") );
-            }
-
-        }catch(SQLException ex){
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }catch(Exception e){
-            System.out.println("ShowAllDataInTestError");
-
-        }finally{
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) { /* ignored */}
-            }
-            if (stmnt != null) {
-                try {
-                    stmnt.close();
-                } catch (SQLException e) { /* ignored */}
-            }
-            if (result != null) {
-                try {
-                    result.close();
-                } catch (SQLException e) { /* ignored */}
-            }
-        }
-        
-    }
-
-    public static void insertScrapeResults(Vector<URLAndKeywords> results){
+    public static void insertScrapeResults(URLAndKeywords page){
         try{
             Connection conn  = null;
             conn = DriverManager.getConnection(host, user, pass);
             CallableStatement insertingPage       = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
             CallableStatement insertingWord       = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
             CallableStatement insertingFrequency  = conn.prepareCall("{CALL insertFrequencyAndReturnID(? , ?, ?)}");
-            for(URLAndKeywords page : results) {
-                //Adding to WebPages table
-                insertingPage.setString(1, page.url);
-                insertingPage.registerOutParameter(2, Types.INTEGER);
-                insertingPage.execute();
-                int pageID = insertingPage.getInt(2);
-                for(Map.Entry<String, Integer> word : page.keywords.entrySet() ){
-                    //Adding to the Words table
-                    insertingWord.setString(1, word.getKey());
-                    insertingWord.registerOutParameter(2, Types.INTEGER);        
-                    insertingWord.execute();
-                    int wordId = insertingWord.getInt(2);
-                    
-                    //Add to Frequencies table
-                    insertingFrequency.setInt(1, pageID);
-                    insertingFrequency.setInt(2, wordId);
-                    insertingFrequency.setInt(3, word.getValue());
-                    insertingFrequency.execute();
-                    
-                    //clear parameters for next interation
-                    insertingWord.clearParameters();
-                    insertingFrequency.clearParameters();
-                }
-                insertingPage.clearParameters();
+            //Adding to WebPages table
+            insertingPage.setString(1, page.url);
+            insertingPage.registerOutParameter(2, Types.INTEGER);
+            insertingPage.execute();
+            int pageID = insertingPage.getInt(2);
+            for(Map.Entry<String, Integer> word : page.keywords.entrySet() ){
+                //Adding to the Words table
+                insertingWord.setString(1, word.getKey());
+                insertingWord.registerOutParameter(2, Types.INTEGER);        
+                insertingWord.execute();
+                int wordId = insertingWord.getInt(2);
+                
+                //Add to Frequencies table
+                insertingFrequency.setInt(1, pageID);
+                insertingFrequency.setInt(2, wordId);
+                insertingFrequency.setInt(3, word.getValue());
+                insertingFrequency.execute();
+                
+                //clear parameters for next interation
+                insertingWord.clearParameters();
+                insertingFrequency.clearParameters();
             }
+            insertingPage.clearParameters();
             insertingPage.close();
             insertingWord.close();
             insertingFrequency.close();
@@ -128,6 +91,10 @@ public class Database {
 
     private static void dropWordsOnPages(URLAndKeywords page){
     
+    }
+
+    public static void initilizeDatabase(){
+
     }
 
 }

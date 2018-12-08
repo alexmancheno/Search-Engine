@@ -1,5 +1,7 @@
 package qc.cs355.application.webcrawler;
 
+import qc.cs355.application.database.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
@@ -19,7 +21,7 @@ public class pScraper {
 			List<String> linkList = links.eachAttr("href");
 			for(String candidateURL : linkList) {
 				candidateURL = candidateURL.split("#", 2)[0];
-				pages.add(candidateURL);
+				if(!Database.isWebPageInDatabase(candidateURL)) pages.add(candidateURL);
 			}
 			
 			String words = document.body().text();

@@ -1,15 +1,12 @@
 package qc.cs355.application.webcrawler;
 
-import java.util.Set;
+import qc.cs355.application.database.*;
 import java.util.Vector;
-import java.util.concurrent.Callable;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Queue;
 import java.util.LinkedList;
 
-public class pWebCrawler implements Callable<Vector<URLAndKeywords>>{
-	public Set<String> visitedURLs = new HashSet<String>();
+public class pWebCrawler implements Runnable{
 	public Queue<String> URLsToVisit = new LinkedList<String>();
 	
 	long visitLimit = 0;
@@ -20,26 +17,19 @@ public class pWebCrawler implements Callable<Vector<URLAndKeywords>>{
 	}
 	
 	@Override
-	public Vector<URLAndKeywords> call() {
-		Vector<URLAndKeywords> resultList = new Vector<URLAndKeywords>();
+	public void run() {
+		URLAndKeywords result;
 
 		while(!URLsToVisit.isEmpty() && visitLimit > 0) {
 			String candidate = URLsToVisit.poll();
-			if(visitedURLs.contains(candidate)) {
-				continue;
-			}
-			else {
-				visitedURLs.add(candidate);
-			}
 			try {
-				resultList.add(pScraper.scrape(candidate, URLsToVisit));
+				result = pScraper.scrape(candidate, URLsToVisit);
+				Database.insertScrapeResults(result);
 			} catch (IOException e) {
 				System.out.println("Error accessing the candidate: " + candidate);
 			}
 			visitLimit--;
-			
 		}
-		return resultList;
 	}
 	
 }

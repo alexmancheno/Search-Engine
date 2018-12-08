@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class URLAndKeywords {
 	public HashMap<String, Integer> keywords;
 	public String url;
+	public long timeToCrawl;
 	
 	public URLAndKeywords(String url) {
 		this.url = url;

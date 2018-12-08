@@ -13,7 +13,9 @@ import org.jsoup.select.Elements;
 public class pScraper {
 
 	static public URLAndKeywords scrape(String URL, Queue<String> pages) throws IOException{
+		long start = System.currentTimeMillis();
 		URLAndKeywords result = new URLAndKeywords(URL);
+
 		try {
 			Document document = Jsoup.connect(URL).get();
 			
@@ -36,7 +38,8 @@ public class pScraper {
 		catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
-		
+
+		result.timeToCrawl = System.currentTimeMillis() - start;
 		return result;
 	}
 }

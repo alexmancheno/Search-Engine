@@ -5,6 +5,8 @@ import qc.cs355.application.database.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
+import java.net.URL;
+
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
@@ -23,7 +25,13 @@ public class pScraper {
 			List<String> linkList = links.eachAttr("href");
 			for(String candidateURL : linkList) {
 				candidateURL = candidateURL.split("#", 2)[0];
-				if(!Database.isWebPageInDatabase(candidateURL)) pages.add(candidateURL);
+				try{
+					new URL(candidateURL).toURI();
+					if(!Database.isWebPageInDatabase(candidateURL)) pages.add(candidateURL);
+				}
+				catch (Exception e){
+					System.out.println(e.getMessage());
+				}
 			}
 			
 			String words = document.body().text();

@@ -1,10 +1,7 @@
 package qc.cs355.application.database;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,12 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import qc.cs355.application.database.ScriptRunner;
-
-
 import qc.cs355.application.webcrawler.URLAndKeywords;
 
 public class Database {
@@ -33,6 +28,7 @@ public class Database {
             PreparedStatement checkIfSchemaExist = conn.prepareStatement("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'phatsearch'");
             ResultSet rs = checkIfSchemaExist.executeQuery();
             if(!rs.first()){   
+                System.out.println("Migrating to local database");
                 ScriptRunner runner = new ScriptRunner(conn, false, false);
                 runner.runScript(new BufferedReader(new FileReader("migration_phatsearch.sql")));
             }
@@ -46,20 +42,18 @@ public class Database {
         }catch(Exception ex){
             System.out.println("Error in migrating Database: " + ex.getMessage());
         }
-
-
     }
 
-
     public static void test() {
-        Connection conn = null;
         try {
+            Connection conn = null;
             // The newInstance() call is a work around for some
             // broken Java implementations
             // Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             conn = DriverManager.getConnection(host, user, pass);
             System.out.println(conn.getMetaData());
             System.out.println("Created instance of connection!!!");
+            conn.close();
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -68,26 +62,6 @@ public class Database {
             // handle any errors
             System.out.println("Exception: " + ex.getMessage());
         }
-    }
-
-    private static void openConnection() {
-
-    }
-
-    public static List<String> phatSearch(String query) {
-        List<String> results = new ArrayList<String>();
-        try {
-            Connection conn = DriverManager.getConnection(host, user, pass);
-            // String sqlQuery = String.format();
-            // PreparedStatement statement = conn.prepareStatement();
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        } catch (Exception ex) {
-            System.out.println("Error in inserting scrape results: " + ex.getMessage());
-        }
-        return results;
     }
 
     public static void insertScrapeResults(URLAndKeywords page) {
@@ -115,7 +89,7 @@ public class Database {
                 insertingFrequency.setInt(3, word.getValue());
                 insertingFrequency.execute();
 
-                // clear parameters for next interation
+                // clear parameters for next iteration
                 insertingWord.clearParameters();
                 insertingFrequency.clearParameters();
             }
@@ -133,9 +107,6 @@ public class Database {
         }
     }
 
-    private static void dropWordsOnPages(URLAndKeywords page) {
-    }
-
     public static boolean isWebPageInDatabase(String url) {
         boolean isInDatabase = false;
         try {
@@ -148,25 +119,54 @@ public class Database {
             if (result.next()) {
                 isInDatabase = true;
             }
+            result.close();
+            stmnt.close();
+            conn.close();
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
         } catch (Exception ex) {
-            System.out.println("Error in inserting scrape results: " + ex.getMessage());
+            System.out.println("Error in is webpage in database " + ex.getMessage());
         }
         return isInDatabase;
     }
 
-    // public static List<String> search(String search){
-    //     String[] splitQuery = search.split("\\s+");
-    //     //int size = splitQuery.length;
-    //     StringBuilder query = new StringBuilder("SELECT WebPages.webPageLink FROM WebPages INNER JOIN");
-
-    //     for(String s : splitQuery ){
-
-    //     }
-
-    // }
-
+    public static List<String> phatSearch(String search){
+        List<String> result = new ArrayList<String>();
+        try{
+            Connection conn = null;
+            conn = DriverManager.getConnection(host, user, pass);
+            //Split by spaces
+            String[] splitQuery = search.split("\\s+");
+            //Build base query
+            StringBuilder query = new StringBuilder("SELECT webPageLink from WebPages AS WP INNER JOIN Frequencies AS F"
+                                                    + "ON  WP.idWebPage = F.idWebPage INNER JOIN (SELECT * FROM Words WHERE");
+            
+            int sizeOfSearch = splitQuery.length;
+            //For every search, add a questionmark, and later replace it with the search
+            for(int i = 0; i < sizeOfSearch; ++i ){
+                query.append("word = ?");
+            }       
+            query.append(") AS W ON W.idWord = F.idWord ORDER BY F.frequency DESC");
+            PreparedStatement stmnt = conn.prepareStatement(query.toString()); 
+            for(int i = 0; i < sizeOfSearch; ++i ){
+                stmnt.setString(i, splitQuery[i]);
+            }   
+            ResultSet rs = stmnt.executeQuery();
+            while(rs.next()){
+                result.add(rs.getString(1));
+            }
+            rs.close();
+            stmnt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } catch (Exception ex) {
+            System.out.println("Error in search: " + ex.getMessage());
+        }
+        return result;
+    }
 }

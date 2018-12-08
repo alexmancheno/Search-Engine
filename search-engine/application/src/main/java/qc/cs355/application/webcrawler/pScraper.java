@@ -1,5 +1,7 @@
 package qc.cs355.application.webcrawler;
 
+import qc.cs355.application.database.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
@@ -11,7 +13,9 @@ import org.jsoup.select.Elements;
 public class pScraper {
 
 	static public URLAndKeywords scrape(String URL, Queue<String> pages) throws IOException{
+		long start = System.currentTimeMillis();
 		URLAndKeywords result = new URLAndKeywords(URL);
+
 		try {
 			Document document = Jsoup.connect(URL).get();
 			
@@ -19,7 +23,7 @@ public class pScraper {
 			List<String> linkList = links.eachAttr("href");
 			for(String candidateURL : linkList) {
 				candidateURL = candidateURL.split("#", 2)[0];
-				pages.add(candidateURL);
+				if(!Database.isWebPageInDatabase(candidateURL)) pages.add(candidateURL);
 			}
 			
 			String words = document.body().text();
@@ -34,7 +38,8 @@ public class pScraper {
 		catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
-		
+
+		result.timeToCrawl = System.currentTimeMillis() - start;
 		return result;
 	}
 }

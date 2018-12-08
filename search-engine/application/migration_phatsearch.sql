@@ -70,7 +70,7 @@ DELIMITER $$
 
 DELIMITER $$
 USE `PhatSearch`$$
-CREATE DEFINER=`luis`@`%` PROCEDURE `insertFrequecy`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertFrequecy`(
 IN url VARCHAR(2083), 
 IN word VARCHAR(2083), 
 IN freq INT
@@ -92,7 +92,7 @@ DELIMITER $$
 
 DELIMITER $$
 USE `PhatSearch`$$
-CREATE DEFINER=`luis`@`%` PROCEDURE `insertURLAndReturnID`(IN url varchar(2083), OUT id INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertURLAndReturnID`(IN url varchar(2083), OUT id INT)
 BEGIN
     INSERT IGNORE INTO WebPages(webPageLink) VALUES(url);	
     SELECT WebPages.idWebPage INTO id FROM WebPages WHERE WebPages.webPageLink = url;
@@ -107,7 +107,7 @@ DELIMITER $$
 
 DELIMITER $$
 USE `PhatSearch`$$
-CREATE DEFINER=`luis`@`%` PROCEDURE `insertWordAndReturnID`(IN word varchar(2083), OUT id INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertWordAndReturnID`(IN word varchar(2083), OUT id INT)
 BEGIN
 	INSERT IGNORE INTO Words(word) VALUES(word);	
     SELECT Words.idWord INTO id FROM Words WHERE Words.word = word;

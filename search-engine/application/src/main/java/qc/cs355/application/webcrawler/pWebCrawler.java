@@ -18,11 +18,14 @@ public class pWebCrawler implements Runnable{
 	
 	@Override
 	public void run() {
+		System.out.println("start crawler"); //debug
 		while(!URLsToVisit.isEmpty() && visitLimit > 0) {
+			System.out.println("New URL scraped");  //debug
 			String candidate = URLsToVisit.poll();
 			try {
 				URLAndKeywords result = pScraper.scrape(candidate, URLsToVisit);
 				Database.insertScrapeResults(result);
+				System.out.println("crawled: " + result.url); //debug
 			} catch (IOException e) {
 				System.out.println("Error accessing the candidate: " + candidate);
 			}

@@ -5,10 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.Map;
-import java.util.Vector;
 import qc.cs355.application.webcrawler.URLAndKeywords;
 
 // Notice, do not import com.mysql.jdbc.*

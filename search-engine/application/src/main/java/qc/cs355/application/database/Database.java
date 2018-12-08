@@ -1,5 +1,10 @@
 package qc.cs355.application.database;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,19 +12,43 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import qc.cs355.application.database.ScriptRunner;
+
+
 import qc.cs355.application.webcrawler.URLAndKeywords;
 
-// Notice, do not import com.mysql.jdbc.*
-// or you will have problems!
-
 public class Database {
-    
-    
     static String host      = "jdbc:mysql://localhost:3306/phatsearch";
     static String user      = "root";
     static String pass      = "SomeRootPass098";
+    
+    static{
+        try{
+            Connection conn  = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306", user, pass);
+            System.out.println("CONNECTED TO MYSQL");
+            PreparedStatement checkIfSchemaExist = conn.prepareStatement("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'phatsearch'");
+            ResultSet rs = checkIfSchemaExist.executeQuery();
+            if(!rs.first()){   
+                ScriptRunner runner = new ScriptRunner(conn, false, false);
+                runner.runScript(new BufferedReader(new FileReader("migration_phatsearch.sql")));
+            }
+            checkIfSchemaExist.close();
+            rs.close();
+            conn.close();
+        }catch(SQLException ex){
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: "     + ex.getSQLState());
+            System.out.println("VendorError: "  + ex.getErrorCode());
+        }catch(Exception ex){
+            System.out.println("Error in migrating Database: " + ex.getMessage());
+        }
 
+
+    }
 
 
     public static void test() {
@@ -111,5 +140,16 @@ public class Database {
         }
         return isInDatabase;  
     }
+
+    // public static List<String> search(String search){
+    //     String[] splitQuery = search.split("\\s+");
+    //     //int size = splitQuery.length;
+    //     StringBuilder query = new StringBuilder("SELECT WebPages.webPageLink FROM WebPages INNER JOIN");
+
+    //     for(String s : splitQuery ){
+
+    //     }
+
+    // }
 
 }

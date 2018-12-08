@@ -3,6 +3,8 @@ package qc.cs355.application.database;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;
@@ -86,12 +88,28 @@ public class Database {
         }
     }
 
-    private static void dropWordsOnPages(URLAndKeywords page){
-    
+    private static void dropWordsOnPages(URLAndKeywords page){ 
     }
 
-    public static void initilizeDatabase(){
-
+    public static boolean isWebPageInDatabase(String url){
+        boolean isInDatabase = false;
+        try{
+            Connection conn  = null;
+            conn = DriverManager.getConnection(host, user, pass);
+            PreparedStatement stmnt = conn.prepareStatement("SELECT WebSELECT WebPages.idWebPage INTO id FROM WebPages WHERE WebPages.webPageLink = ?");
+            stmnt.setString(1, url);
+            ResultSet result = stmnt.executeQuery();
+            if(result.next()){
+                isInDatabase = true;
+            }
+        }catch(SQLException ex){
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: "     + ex.getSQLState());
+            System.out.println("VendorError: "  + ex.getErrorCode());
+        }catch(Exception ex){
+            System.out.println("Error in inserting scrape results: " + ex.getMessage());
+        }
+        return isInDatabase;  
     }
 
 }

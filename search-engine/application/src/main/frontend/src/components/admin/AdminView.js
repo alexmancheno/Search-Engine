@@ -1,4 +1,5 @@
 import React,  {Component} from 'react';
+import IndexedPages from './IndexedPages/IndexedPages';
 
 export default class AdminView extends Component {
     constructor(props) {
@@ -8,7 +9,9 @@ export default class AdminView extends Component {
     render() {
         return (
             <div>
-                <h1>hey</h1>
+                <IndexedPages/>
+                {/* <PagesToBeIndexed pagesToBeIndexed={this.state.pagesToBeIndexed} />
+                <searchQueriesAndResultCount searchQueriesAndResultCount={this.state.searchQueriesAndResultCount} /> */}
             </div>
         )
     }

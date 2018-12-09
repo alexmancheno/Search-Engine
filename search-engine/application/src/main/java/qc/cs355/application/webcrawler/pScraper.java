@@ -22,7 +22,7 @@ public class pScraper {
 			Document document = Jsoup.connect(URL).get();
 			
 			Elements links = document.select("a");
-			List<String> linkList = links.eachAttr("href");
+			List<String> linkList = links.eachAttr("abs:href");
 			for(String candidateURL : linkList) {
 				candidateURL = candidateURL.split("#", 2)[0];
 				try{

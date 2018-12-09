@@ -216,19 +216,22 @@ public class Database {
             //Split by spaces
             String[] splitQuery = search.split("\\s+");
             //Build base query
-            StringBuilder query = new StringBuilder("SELECT webPageLink from WebPages AS WP INNER JOIN Frequencies AS F"
-                                                    + "ON  WP.idWebPage = F.idWebPage INNER JOIN (SELECT * FROM Words WHERE");
+            StringBuilder query = new StringBuilder("SELECT WP.webPageLink from WebPages AS WP INNER JOIN Frequencies AS F"
+                                                    + " ON  WP.idWebPage = F.idWebPage INNER JOIN (SELECT * FROM Words WHERE");
 
             int sizeOfSearch = splitQuery.length;
             
             //For every search, add a questionmark, and later replace it with the search
             for(int i = 0; i < sizeOfSearch; ++i ){
-                query.append("word = ?");
-            }       
+                query.append(" word = ? OR");
+            }
+            query.setLength(query.length() - 2);
+
             query.append(") AS W ON W.idWord = F.idWord ORDER BY F.frequency DESC;");
+            System.out.println(query.toString());
             PreparedStatement stmnt = conn.prepareStatement(query.toString()); 
             for(int i = 0; i < sizeOfSearch; ++i ){
-                stmnt.setString(i, splitQuery[i]);
+                stmnt.setString(i+1, splitQuery[i]);
             }   
             ResultSet rs = stmnt.executeQuery();
             while(rs.next()){

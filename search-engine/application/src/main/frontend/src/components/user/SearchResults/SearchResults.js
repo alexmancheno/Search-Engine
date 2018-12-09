@@ -5,8 +5,6 @@ export default class SearchResults extends Component {
         super(props);
     }
 
-
-
     render() {
         console.log(this.props.searchResults)
         return (

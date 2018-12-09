@@ -19,7 +19,6 @@ export default class SearchBar extends Component {
 
     runPhatSearch() {
         let api = process.env.API_URL + '/search';
-        console.log('API: ' + api);
         axios.get(api, {
             params: {
                 query: this.state.searchQuery

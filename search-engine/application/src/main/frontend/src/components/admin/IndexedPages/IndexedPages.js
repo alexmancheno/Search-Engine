@@ -6,33 +6,32 @@ export default class IndexedPages extends Component {
         super(props);
         axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
         this.getIndexedPages = this.getIndexedPages.bind(this);
+        this.state = {
+            indexedPages: []
+        }
+        this.getIndexedPages();
     }
 
     getIndexedPages() {
-
-        let results;
         let api = process.env.API_URL + '/getIndexedPages';
         axios.get(api)
         .then(res => {
-            let keys = res.data;
-            console.log(keys);
-            results = Object.keys(keys).map(item => {
-                <li className='list-group-item'>{keys[item]}</li>
-            })
-            return results;
+            this.setState({indexedPages: res.data});
         }).catch(error => {
             console.log(error);
         })
     }
 
     render() {
-        let listItems = this.getIndexedPages();
-
         return (
             <div className="container">
+            <h5>Indexed pages</h5>
                 <ul className="list-group">
-                <li className='list-group-item'>test</li>
-                    {listItems}
+                {
+                    this.state.indexedPages.map(row => (
+                        <li key={row.toString()}className="list-group-item">{row}</li>
+                    )) 
+                }
                 </ul>
             </div>
         )

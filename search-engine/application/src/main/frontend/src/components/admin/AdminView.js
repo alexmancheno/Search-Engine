@@ -1,5 +1,7 @@
 import React,  {Component} from 'react';
 import IndexedPages from './IndexedPages/IndexedPages';
+import UserSearchQueries from './UserSearchQueries/UserSearchQueries';
+import DatabaseInformation from './DatabaseInformation/DatabaseInformation';
 
 export default class AdminView extends Component {
     constructor(props) {
@@ -9,9 +11,13 @@ export default class AdminView extends Component {
     render() {
         return (
             <div>
+                <h2>Welcome to the Admin view!</h2>
+                <br />
                 <IndexedPages/>
-                {/* <PagesToBeIndexed pagesToBeIndexed={this.state.pagesToBeIndexed} />
-                <searchQueriesAndResultCount searchQueriesAndResultCount={this.state.searchQueriesAndResultCount} /> */}
+                <br />
+                <UserSearchQueries />
+                <br />
+                <DatabaseInformation />
             </div>
         )
     }

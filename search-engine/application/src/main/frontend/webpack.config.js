@@ -11,8 +11,11 @@ const htmlPlugin = new HtmlWebPackPlugin({
 });
 
 module.exports = env => {
+    let environmentKeys = {
+        'process.env.API_URL': JSON.stringify(env.API_URL),
+    }
     return {
-        plugins: [htmlPlugin, new webpack.DefinePlugin(envKeys)],
+        plugins: [htmlPlugin, new webpack.DefinePlugin(environmentKeys)],
         module: {
             rules: [
                 {

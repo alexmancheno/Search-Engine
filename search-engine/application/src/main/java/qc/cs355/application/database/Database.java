@@ -71,12 +71,19 @@ public class Database {
         //out parameters returned by procedure.
         //SQLException: Column 'idWebPage' cannot be null
         Connection conn = null;
+        PreparedStatement dropFreqForUrl = null;
         CallableStatement insertingPage = null;
         CallableStatement insertingWord = null;
         CallableStatement insertingFrequency = null;
         try{
             try {
                 conn = DriverManager.getConnection(host, user, pass);
+                dropFreqForUrl = conn.prepareStatement("DELETE FROM Frequencies WHERE idWebPage = (SELECT idWebPage FROM Webpages WHERE webPageLink = ?)");
+                dropFreqForUrl.setString(1, page.url);
+                try{
+                    dropFreqForUrl.execute();
+                }catch(SQLException ex){}
+                
                 insertingPage      = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
                 insertingWord      = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
                 insertingFrequency = conn.prepareCall("{CALL insertFrequency(? , ?, ?)}");
@@ -96,24 +103,25 @@ public class Database {
                     // Adding to the Words table
                     if( word.getKey().length() == 0){continue;}
                     int wordId = isWordInDatabase(word.getKey());
-                    if(wordId != -1 ){continue;}
-                    insertingWord.setString(1, word.getKey());
-                    //System.out.println("THIS IS THE WORD: "+ word.getKey().length());
-                    insertingWord.registerOutParameter(2, Types.INTEGER);
-                    //System.out.println("INSERTING WORD----:"+ word.getKey());
-                    try{
-                        insertingWord.execute();
-                     }catch(SQLException ex){
-                        System.out.println("SQLException: " + ex.getMessage());
-                        System.out.println("SQLState: "     + ex.getSQLState());
-                        System.out.println("VendorError: "  + ex.getErrorCode());
-                        //  if(ex.getErrorCode() == 1048){
-                        //      insertingWord.clearParameters();
-                        //      continue;
-                        //  }
-                     }        
-                    wordId = insertingWord.getInt(2);
-                    //System.out.println("INSERTING WORD FREQ---pageID:"+pageID+", wordId:"+wordId+", freq:"+ word.getValue());
+                    if(wordId == -1 ){
+                        insertingWord.setString(1, word.getKey());
+                        //System.out.println("THIS IS THE WORD: "+ word.getKey().length());
+                        insertingWord.registerOutParameter(2, Types.INTEGER);
+                        //System.out.println("INSERTING WORD----:"+ word.getKey());
+                        try{
+                            insertingWord.execute();
+                         }catch(SQLException ex){
+                            System.out.println("SQLException: " + ex.getMessage());
+                            System.out.println("SQLState: "     + ex.getSQLState());
+                            System.out.println("VendorError: "  + ex.getErrorCode());
+                            //  if(ex.getErrorCode() == 1048){
+                            //      insertingWord.clearParameters();
+                            //      continue;
+                            //  }
+                         }        
+                        wordId = insertingWord.getInt(2);
+                        //System.out.println("INSERTING WORD FREQ---pageID:"+pageID+", wordId:"+wordId+", freq:"+ word.getValue());
+                    } 
 
                     // Add to Frequencies table
                     insertingFrequency.setInt(1, pageID);
@@ -138,6 +146,7 @@ public class Database {
             } catch (Exception ex) {
                 System.out.println("Error in inserting scrape results: " + ex.getMessage());
             }finally{
+                    dropFreqForUrl.close();
                     insertingPage.close();
                     insertingWord.close();
                     insertingFrequency.close();
@@ -206,7 +215,6 @@ public class Database {
         }
         return result;
     }
-
 
     public static List<String> phatSearch(String search){
         List<String> result = new ArrayList<String>();

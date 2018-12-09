@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import qc.cs355.application.database.ScriptRunner;
@@ -105,6 +104,9 @@ public class Database {
                     try{
                         insertingWord.execute();
                      }catch(SQLException ex){
+                        System.out.println("SQLException: " + ex.getMessage());
+                        System.out.println("SQLState: "     + ex.getSQLState());
+                        System.out.println("VendorError: "  + ex.getErrorCode());
                         //  if(ex.getErrorCode() == 1048){
                         //      insertingWord.clearParameters();
                         //      continue;
@@ -216,8 +218,9 @@ public class Database {
             //Build base query
             StringBuilder query = new StringBuilder("SELECT webPageLink from WebPages AS WP INNER JOIN Frequencies AS F"
                                                     + "ON  WP.idWebPage = F.idWebPage INNER JOIN (SELECT * FROM Words WHERE");
-            
+
             int sizeOfSearch = splitQuery.length;
+            
             //For every search, add a questionmark, and later replace it with the search
             for(int i = 0; i < sizeOfSearch; ++i ){
                 query.append("word = ?");

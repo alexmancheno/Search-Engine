@@ -74,7 +74,6 @@ public class Database {
         CallableStatement insertingFrequency = null;
         try{
             try {
-                System.out.println("INSERTING---" + page.url);
                 conn = DriverManager.getConnection(host, user, pass);
                 insertingPage = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
                 insertingWord = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
@@ -85,6 +84,7 @@ public class Database {
                 insertingPage.execute();
                 int pageID = insertingPage.getInt(2);
                 for (Map.Entry<String, Integer> word : page.keywords.entrySet()) {
+                    if(word.getKey() ==""){continue;}
                     // Adding to the Words table
                     insertingWord.setString(1, word.getKey());
                     insertingWord.registerOutParameter(2, Types.INTEGER);
@@ -124,7 +124,7 @@ public class Database {
         try {
             Connection conn = null;
             conn = DriverManager.getConnection(host, user, pass);
-            PreparedStatement stmnt = conn.prepareStatement("SELECT WebSELECT WebPages.idWebPage INTO id FROM WebPages WHERE WebPages.webPageLink = ?;");
+            PreparedStatement stmnt = conn.prepareStatement("SELECT * FROM WebPages WHERE webPageLink = ?");
             stmnt.setString(1, url);
             ResultSet result = stmnt.executeQuery();
             if (result.next()) {

@@ -16,7 +16,7 @@ public class Application
 	{
 		//Starting the web crawler at server start, with the first site
 		//being cnn, and the maximum number of crawled sites set at 100000
-		new Thread(new pWebCrawler("https://www.google.com", 1)).start();
+		new Thread(new pWebCrawler("https://www.google.com", 100)).start();
 		SpringApplication.run(Application.class, args);
 		//Database.test();
 	}

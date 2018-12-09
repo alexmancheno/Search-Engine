@@ -76,11 +76,11 @@ IN inWord VARCHAR(2083),
 IN freq INT
 )
 BEGIN
-	  DECLARE idU int;
-    DECLARE idW int;
-    SELECT idWebPage INTO idU FROM WebPages WHERE webPageLink = inUrl;
-    SELECT idWord INTO idW FROM Words WHERE word = inWord;
-    INSERT INTO Frequencies(idWebPage, idWord, frequency) VALUES(idU, idW, freq);
+		  DECLARE idU int;
+		  DECLARE idW int;
+		  SELECT idWebPage INTO idU FROM WebPages WHERE webPageLink = inUrl;
+		  SELECT idWord INTO idW FROM Words WHERE word = inWord;
+		  INSERT INTO Frequencies(idWebPage, idWord, frequency) VALUES(idU, idW, freq);
 END$$
 
 DELIMITER ;
@@ -94,8 +94,8 @@ DELIMITER $$
 USE `PhatSearch`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertURLAndReturnID`(IN inUrl varchar(2083), OUT idResultWord INT)
 BEGIN
-    INSERT IGNORE INTO WebPages(webPageLink) VALUES(inUrl);	
-    SELECT idWebPage INTO idResultWord FROM WebPages WHERE webPageLink = inUrl;
+     INSERT INTO WebPages(webPageLink) VALUES(inUrl);	
+     SELECT idWebPage INTO idResultWord FROM WebPages WHERE webPageLink = inUrl;
 END$$
 
 DELIMITER ;
@@ -109,8 +109,8 @@ DELIMITER $$
 USE `PhatSearch`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertWordAndReturnID`(IN inWord varchar(2083), OUT idResultWord INT)
 BEGIN
-	INSERT IGNORE INTO Words(word) VALUES(inWord);	
-    SELECT idWord INTO idResultWord FROM Words WHERE word = inWord;
+      INSERT INTO Words(word) VALUES(inWord);	
+      SELECT idWord INTO idResultWord FROM Words WHERE word = inWord;
 END$$
 
 DELIMITER ;

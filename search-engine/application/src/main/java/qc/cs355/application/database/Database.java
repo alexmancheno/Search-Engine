@@ -68,6 +68,9 @@ public class Database {
     }
 
     public static void insertScrapeResults(URLAndKeywords page) {
+        //TODO
+        //out parameters returned by procedure.
+        //SQLException: Column 'idWebPage' cannot be null
         Connection conn = null;
         CallableStatement insertingPage = null;
         CallableStatement insertingWord = null;
@@ -75,28 +78,52 @@ public class Database {
         try{
             try {
                 conn = DriverManager.getConnection(host, user, pass);
-                insertingPage = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
-                insertingWord = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
+                insertingPage      = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
+                insertingWord      = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
                 insertingFrequency = conn.prepareCall("{CALL insertFrequency(? , ?, ?)}");
+
                 // Adding to WebPages table
                 insertingPage.setString(1, page.url);
                 insertingPage.registerOutParameter(2, Types.INTEGER);
-                insertingPage.execute();
+                try{
+                    insertingPage.execute();
+                }catch(SQLException ex){
+                    System.out.println("VendorError: "  + ex.getErrorCode());
+                }
+                //System.out.println("Inserted Page");
                 int pageID = insertingPage.getInt(2);
+                //System.out.println(pageID);
                 for (Map.Entry<String, Integer> word : page.keywords.entrySet()) {
-                    if(word.getKey() ==""){continue;}
                     // Adding to the Words table
+                    if( word.getKey().length() == 0){continue;}
+                    int wordId = isWordInDatabase(word.getKey());
+                    if(wordId != -1 ){continue;}
                     insertingWord.setString(1, word.getKey());
+                    //System.out.println("THIS IS THE WORD: "+ word.getKey().length());
                     insertingWord.registerOutParameter(2, Types.INTEGER);
-                    insertingWord.execute();
-
-                    int wordId = insertingWord.getInt(2);
+                    //System.out.println("INSERTING WORD----:"+ word.getKey());
+                    try{
+                        insertingWord.execute();
+                     }catch(SQLException ex){
+                        //  if(ex.getErrorCode() == 1048){
+                        //      insertingWord.clearParameters();
+                        //      continue;
+                        //  }
+                     }        
+                    wordId = insertingWord.getInt(2);
+                    //System.out.println("INSERTING WORD FREQ---pageID:"+pageID+", wordId:"+wordId+", freq:"+ word.getValue());
 
                     // Add to Frequencies table
                     insertingFrequency.setInt(1, pageID);
                     insertingFrequency.setInt(2, wordId);
                     insertingFrequency.setInt(3, word.getValue());
-                    insertingFrequency.execute();
+                    try{
+                        insertingFrequency.execute();
+                    } catch (SQLException ex) {
+                        System.out.println("SQLException: " + ex.getMessage());
+                        System.out.println("SQLState: " + ex.getSQLState());
+                        System.out.println("VendorError: " + ex.getErrorCode());
+                    }
 
                     // clear parameters for next iteration
                     insertingWord.clearParameters();
@@ -118,6 +145,7 @@ public class Database {
             System.out.println("Error closed" + ex.getMessage());
         }
     }
+
 
     public static boolean isWebPageInDatabase(String url) {
         boolean isInDatabase = false;
@@ -142,6 +170,41 @@ public class Database {
         }
         return isInDatabase;
     }
+
+    private static int isWordInDatabase(String word) {
+        int result = -1;
+        try{
+            Connection conn = null;
+            PreparedStatement stmnt = null;
+            ResultSet res = null;
+            try { 
+                conn = DriverManager.getConnection(host, user, pass);
+                stmnt = conn.prepareStatement("SELECT idWord FROM Words WHERE word = ?");
+                stmnt.setString(1, word);
+                res = stmnt.executeQuery();
+                if (res.next()) {
+                    result = res.getInt(1);
+                }
+                res.close();
+                stmnt.close();
+                conn.close();
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (Exception ex) {
+                System.out.println("Error in is webpage in database " + ex.getMessage());
+            }finally{
+                res.close();
+                stmnt.close();
+                conn.close();
+            }
+        }catch(Exception ex){
+            System.out.println("Error closed" + ex.getMessage());
+        }
+        return result;
+    }
+
 
     public static List<String> phatSearch(String search){
         List<String> result = new ArrayList<String>();

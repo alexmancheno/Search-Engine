@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`Frequencies` (
   `idWord` INT(11) NOT NULL,
   `frequency` INT(11) NOT NULL,
   PRIMARY KEY (`idFrequency`),
-  INDEX `FK_Frequencies_WebPages_idx` (`idWebPage` ASC) VISIBLE,
-  INDEX `FK_Frequencies_Words_idx` (`idWord` ASC) VISIBLE,
+  INDEX `FK_Frequencies_WebPages_idx` (`idWebPage` ASC),
+  INDEX `FK_Frequencies_Words_idx` (`idWord` ASC),
   CONSTRAINT `FK_Frequencies_WebPages`
     FOREIGN KEY (`idWebPage`)
     REFERENCES `PhatSearch`.`WebPages` (`idWebPage`)
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`WebPages` (
   `idWebPage` INT(11) NOT NULL AUTO_INCREMENT,
   `webPageLink` VARCHAR(2083) NOT NULL,
   PRIMARY KEY (`idWebPage`),
-  UNIQUE INDEX `webPageLink_UNIQUE` (`webPageLink`(255) ASC) VISIBLE)
+  UNIQUE INDEX `webPageLink_UNIQUE` (`webPageLink`(255) ASC))
 ENGINE = InnoDB
 AUTO_INCREMENT = 51
 DEFAULT CHARACTER SET = latin1;
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`Words` (
   `idWord` INT(11) NOT NULL AUTO_INCREMENT,
   `word` VARCHAR(2083) NOT NULL,
   PRIMARY KEY (`idWord`),
-  UNIQUE INDEX `word_UNIQUE` (`word`(255) ASC) VISIBLE)
+  UNIQUE INDEX `word_UNIQUE` (`word`(255) ASC))
 ENGINE = InnoDB
 AUTO_INCREMENT = 6
 DEFAULT CHARACTER SET = latin1;
@@ -71,16 +71,12 @@ DELIMITER $$
 DELIMITER $$
 USE `PhatSearch`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertFrequency`(
-IN inUrl VARCHAR(2083), 
-IN inWord VARCHAR(2083), 
+IN idUrl INT, 
+IN idWord INT, 
 IN freq INT
 )
 BEGIN
-		  DECLARE idU int;
-		  DECLARE idW int;
-		  SELECT idWebPage INTO idU FROM WebPages WHERE webPageLink = inUrl;
-		  SELECT idWord INTO idW FROM Words WHERE word = inWord;
-		  INSERT INTO Frequencies(idWebPage, idWord, frequency) VALUES(idU, idW, freq);
+		  INSERT INTO Frequencies(idWebPage, idWord, frequency) VALUES(idUrl, idWord, freq);
 END$$
 
 DELIMITER ;
@@ -94,8 +90,8 @@ DELIMITER $$
 USE `PhatSearch`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertURLAndReturnID`(IN inUrl varchar(2083), OUT idResultWord INT)
 BEGIN
-     INSERT INTO WebPages(webPageLink) VALUES(inUrl);	
-     SELECT idWebPage INTO idResultWord FROM WebPages WHERE webPageLink = inUrl;
+      INSERT INTO WebPages(webPageLink) VALUES(inUrl);	
+      SELECT idWebPage INTO idResultWord FROM WebPages WHERE webPageLink = inUrl;
 END$$
 
 DELIMITER ;

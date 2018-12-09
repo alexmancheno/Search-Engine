@@ -23,6 +23,7 @@ public class Database {
     
     static{
         try{
+            //Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn  = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306", user, pass);
             System.out.println("CONNECTED TO MYSQL");
@@ -33,6 +34,7 @@ public class Database {
                 ScriptRunner runner = new ScriptRunner(conn, false, false);
                 runner.runScript(new BufferedReader(new FileReader("migration_phatsearch.sql")));
             }
+            
             checkIfSchemaExist.close();
             rs.close();
             conn.close();
@@ -50,7 +52,7 @@ public class Database {
             Connection conn = null;
             // The newInstance() call is a work around for some
             // broken Java implementations
-            // Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+            
             conn = DriverManager.getConnection(host, user, pass);
             System.out.println(conn.getMetaData());
             System.out.println("Created instance of connection!!!");
@@ -66,45 +68,54 @@ public class Database {
     }
 
     public static void insertScrapeResults(URLAndKeywords page) {
-        try {
-            Connection conn = null;
-            conn = DriverManager.getConnection(host, user, pass);
-            CallableStatement insertingPage = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
-            CallableStatement insertingWord = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
-            CallableStatement insertingFrequency = conn.prepareCall("{CALL insertFrequencyAndReturnID(? , ?, ?)}");
-            // Adding to WebPages table
-            insertingPage.setString(1, page.url);
-            insertingPage.registerOutParameter(2, Types.INTEGER);
-            insertingPage.execute();
-            int pageID = insertingPage.getInt(2);
-            for (Map.Entry<String, Integer> word : page.keywords.entrySet()) {
-                // Adding to the Words table
-                insertingWord.setString(1, word.getKey());
-                insertingWord.registerOutParameter(2, Types.INTEGER);
-                insertingWord.execute();
-                int wordId = insertingWord.getInt(2);
+        Connection conn = null;
+        CallableStatement insertingPage = null;
+        CallableStatement insertingWord = null;
+        CallableStatement insertingFrequency = null;
+        try{
+            try {
+                System.out.println("INSERTING---" + page.url);
+                conn = DriverManager.getConnection(host, user, pass);
+                insertingPage = conn.prepareCall("{CALL insertURLAndReturnID(? , ?)}");
+                insertingWord = conn.prepareCall("{CALL insertWordAndReturnID(? , ?)}");
+                insertingFrequency = conn.prepareCall("{CALL insertFrequency(? , ?, ?)}");
+                // Adding to WebPages table
+                insertingPage.setString(1, page.url);
+                insertingPage.registerOutParameter(2, Types.INTEGER);
+                insertingPage.execute();
+                int pageID = insertingPage.getInt(2);
+                for (Map.Entry<String, Integer> word : page.keywords.entrySet()) {
+                    // Adding to the Words table
+                    insertingWord.setString(1, word.getKey());
+                    insertingWord.registerOutParameter(2, Types.INTEGER);
+                    insertingWord.execute();
 
-                // Add to Frequencies table
-                insertingFrequency.setInt(1, pageID);
-                insertingFrequency.setInt(2, wordId);
-                insertingFrequency.setInt(3, word.getValue());
-                insertingFrequency.execute();
+                    int wordId = insertingWord.getInt(2);
 
-                // clear parameters for next iteration
-                insertingWord.clearParameters();
-                insertingFrequency.clearParameters();
+                    // Add to Frequencies table
+                    insertingFrequency.setInt(1, pageID);
+                    insertingFrequency.setInt(2, wordId);
+                    insertingFrequency.setInt(3, word.getValue());
+                    insertingFrequency.execute();
+
+                    // clear parameters for next iteration
+                    insertingWord.clearParameters();
+                    insertingFrequency.clearParameters();
+                } 
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (Exception ex) {
+                System.out.println("Error in inserting scrape results: " + ex.getMessage());
+            }finally{
+                    insertingPage.close();
+                    insertingWord.close();
+                    insertingFrequency.close();
+                    conn.close();      
             }
-            insertingPage.clearParameters();
-            insertingPage.close();
-            insertingWord.close();
-            insertingFrequency.close();
-            conn.close();
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        } catch (Exception ex) {
-            System.out.println("Error in inserting scrape results: " + ex.getMessage());
+        }catch(Exception ex){
+            System.out.println("Error closed" + ex.getMessage());
         }
     }
 
@@ -113,8 +124,7 @@ public class Database {
         try {
             Connection conn = null;
             conn = DriverManager.getConnection(host, user, pass);
-            PreparedStatement stmnt = conn.prepareStatement(
-                    "SELECT WebSELECT WebPages.idWebPage INTO id FROM WebPages WHERE WebPages.webPageLink = ?");
+            PreparedStatement stmnt = conn.prepareStatement("SELECT WebSELECT WebPages.idWebPage INTO id FROM WebPages WHERE WebPages.webPageLink = ?;");
             stmnt.setString(1, url);
             ResultSet result = stmnt.executeQuery();
             if (result.next()) {
@@ -149,7 +159,7 @@ public class Database {
             for(int i = 0; i < sizeOfSearch; ++i ){
                 query.append("word = ?");
             }       
-            query.append(") AS W ON W.idWord = F.idWord ORDER BY F.frequency DESC");
+            query.append(") AS W ON W.idWord = F.idWord ORDER BY F.frequency DESC;");
             PreparedStatement stmnt = conn.prepareStatement(query.toString()); 
             for(int i = 0; i < sizeOfSearch; ++i ){
                 stmnt.setString(i, splitQuery[i]);

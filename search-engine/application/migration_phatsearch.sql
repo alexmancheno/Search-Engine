@@ -70,17 +70,17 @@ DELIMITER $$
 
 DELIMITER $$
 USE `PhatSearch`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertFrequecy`(
-IN url VARCHAR(2083), 
-IN word VARCHAR(2083), 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertFrequency`(
+IN inUrl VARCHAR(2083), 
+IN inWord VARCHAR(2083), 
 IN freq INT
 )
 BEGIN
-	DECLARE idUrl int;
-    DECLARE idWord int;
-    SELECT WebPages.idWebPage INTO idUrl FROM WebPages WHERE WebPages.webPageLink = url;
-    SELECT Words.idWord INTO idWord FROM Words WHERE Words.word = word;
-    INSERT INTO Frequencies(idWebPage, idWord, frequency) VALUES(idUrl, idWord, freq);
+	  DECLARE idU int;
+    DECLARE idW int;
+    SELECT idWebPage INTO idU FROM WebPages WHERE webPageLink = inUrl;
+    SELECT idWord INTO idW FROM Words WHERE word = inWord;
+    INSERT INTO Frequencies(idWebPage, idWord, frequency) VALUES(idU, idW, freq);
 END$$
 
 DELIMITER ;
@@ -92,10 +92,10 @@ DELIMITER $$
 
 DELIMITER $$
 USE `PhatSearch`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertURLAndReturnID`(IN url varchar(2083), OUT id INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertURLAndReturnID`(IN inUrl varchar(2083), OUT idResultWord INT)
 BEGIN
-    INSERT IGNORE INTO WebPages(webPageLink) VALUES(url);	
-    SELECT WebPages.idWebPage INTO id FROM WebPages WHERE WebPages.webPageLink = url;
+    INSERT IGNORE INTO WebPages(webPageLink) VALUES(inUrl);	
+    SELECT idWebPage INTO idResultWord FROM WebPages WHERE webPageLink = inUrl;
 END$$
 
 DELIMITER ;
@@ -107,10 +107,10 @@ DELIMITER $$
 
 DELIMITER $$
 USE `PhatSearch`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertWordAndReturnID`(IN word varchar(2083), OUT id INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertWordAndReturnID`(IN inWord varchar(2083), OUT idResultWord INT)
 BEGIN
-	INSERT IGNORE INTO Words(word) VALUES(word);	
-    SELECT Words.idWord INTO id FROM Words WHERE Words.word = word;
+	INSERT IGNORE INTO Words(word) VALUES(inWord);	
+    SELECT idWord INTO idResultWord FROM Words WHERE word = inWord;
 END$$
 
 DELIMITER ;

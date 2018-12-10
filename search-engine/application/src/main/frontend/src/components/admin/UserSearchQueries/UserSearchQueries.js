@@ -1,5 +1,6 @@
 import React,  {Component} from 'react';
 import axios from 'axios';
+import style from './style.css';
 
 export default class UserSearchQueries extends Component {
     constructor(props) {
@@ -26,9 +27,9 @@ export default class UserSearchQueries extends Component {
         return (
             <div className="container">
             <h5>User Search Queries and Count</h5>
-                <ul className="list-group">
+                <ul className={"list-group " + style.scrollableListGroup}>
                     {Object.keys(this.state.userSearchQueries).map(item=> (
-                        <li key={item.toString()} className="list-group-item d-flex justify-content-between align-items-center">
+                        <li key={item.toString()} className={"list-group-item d-flex justify-content-between align-items-center " + style.listItem}>
                             {item}
                             <span className="badge badge-primary badge-pill">{this.state.userSearchQueries[item]}</span>
                         </li>

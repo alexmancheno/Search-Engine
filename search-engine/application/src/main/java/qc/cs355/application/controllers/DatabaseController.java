@@ -26,7 +26,7 @@ public class DatabaseController {
     @RequestMapping("/search")
     @CrossOrigin(origins = "http://localhost:8081")
     public String search(@RequestParam("query") String query) {
-
+        System.out.println("Query: " + query);
         List<String> results = Database.phatSearch(query);
         // System.out.printf("Query: %s\n", query);
         // List<String> results = new ArrayList<>();
@@ -40,8 +40,17 @@ public class DatabaseController {
     @RequestMapping("/getIndexedPages")
     @CrossOrigin(origins = "http://localhost:8081")
     public String getIndexedPages() {
-        // List<String> results = Database.getIndexedPages();
+        // List<String> results = Database.getIndexedPages(100);
         List<String> results = new ArrayList<>();
+        results.add("a");
+        results.add("b");
+        results.add("c");
+        results.add("a");
+        results.add("b");
+        results.add("c");
+        results.add("a");
+        results.add("b");
+        results.add("c");
         results.add("a");
         results.add("b");
         results.add("c");
@@ -56,6 +65,15 @@ public class DatabaseController {
         results.put("a", 2);
         results.put("b", 1);
         results.put("c", 5);
+        results.put("a", 2);
+        results.put("aa", 1);
+        results.put("csd", 5);
+        results.put("adsa", 2);
+        results.put("dasdb", 1);
+        results.put("cdsfs", 5);
+        results.put("aasdfad", 2);
+        results.put("adfasb", 1);
+        results.put("afdsc", 5);
         return new Gson().toJsonTree(results).toString();
     }
 

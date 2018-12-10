@@ -18,11 +18,10 @@ CREATE SCHEMA IF NOT EXISTS `PhatSearch` ;
 -- Table PhatSearch.Frequencies
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `PhatSearch`.`Frequencies` (
-  `idFrequency` INT(11) NOT NULL AUTO_INCREMENT,
   `idWebPage` INT(11) NOT NULL,
   `idWord` INT(11) NOT NULL,
   `frequency` INT(11) NOT NULL,
-  PRIMARY KEY (`idFrequency`),
+  PRIMARY KEY (`idWebPage`,`idWord`),
   INDEX `FK_Frequencies_WebPages_idx` (`idWebPage` ASC),
   INDEX `FK_Frequencies_Words_idx` (`idWord` ASC),
   CONSTRAINT `FK_Frequencies_WebPages`
@@ -36,7 +35,6 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`Frequencies` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = latin1;
 
 -- ----------------------------------------------------------------------------

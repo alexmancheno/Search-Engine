@@ -30,7 +30,7 @@ public class pScraper {
 					if(!Database.isWebPageInDatabase(candidateURL)) pages.add(candidateURL);
 				}
 				catch (Exception e){
-					//System.out.println(e.getMessage());
+					System.out.println(e.getMessage());
 				}
 			}
 			
@@ -44,7 +44,7 @@ public class pScraper {
 			}
 		}
 		catch (IllegalArgumentException e) {
-			//System.out.println(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 
 		result.timeToCrawl = System.currentTimeMillis() - start;

@@ -1,5 +1,6 @@
 import React,  {Component} from 'react';
 import axios from 'axios';
+import style from './style.css';
 
 export default class IndexedPages extends Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class IndexedPages extends Component {
         return (
             <div className="container">
             <h5>Indexed pages</h5>
-                <ul className="list-group">
+                <ul className={"list-group " + style.scrollableListGroup } >
                 {
                     this.state.indexedPages.map(row => (
                         <li key={row.toString()}className="list-group-item">{row}</li>

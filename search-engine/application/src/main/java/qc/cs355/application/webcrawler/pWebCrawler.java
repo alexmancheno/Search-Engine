@@ -25,9 +25,9 @@ public class pWebCrawler implements Runnable{
 			try {
 				URLAndKeywords result = pScraper.scrape(candidate, URLsToVisit);
 				Database.insertScrapeResults(result);
-				//System.out.println("crawled: " + result.url); //debug
+				System.out.println("crawled: " + result.url); //debug
 			} catch (IOException e) {
-				//System.out.println("Error accessing the candidate: " + candidate);
+				System.out.println("Error accessing the candidate: " + candidate);
 			}
 			visitLimit--;
 		}

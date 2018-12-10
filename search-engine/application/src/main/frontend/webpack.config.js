@@ -11,6 +11,7 @@ const htmlPlugin = new HtmlWebPackPlugin({
 });
 
 module.exports = env => {
+    console.log(JSON.stringify(env.API_URL));
     let environmentKeys = {
         'process.env.API_URL': JSON.stringify(env.API_URL),
     }

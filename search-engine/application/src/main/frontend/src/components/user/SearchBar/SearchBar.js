@@ -19,11 +19,13 @@ export default class SearchBar extends Component {
 
     runPhatSearch() {
         let api = process.env.API_URL + '/search';
+        console.log('API: ' + api);
         axios.get(api, {
             params: {
                 query: this.state.searchQuery
             }
         }).then(res => {
+            console.log('RES: ' + JSON.stringify(res));
             this.props.onSearch(res.data);
         }).catch(error => {
             console.log(error);
@@ -40,7 +42,7 @@ export default class SearchBar extends Component {
                         value={this.state.searchQuery} onChange={e => this.handleSearchQueryChange(e)}
                     />
                     <div className="input-group-append">
-                        <button className="btn btn-secondary" type="button" onClick={e => this.runPhatSearch('testing')}>
+                        <button className="btn btn-secondary" type="button" onClick={e => this.runPhatSearch()}>
                             <i className="fa fa-search"></i>
                         </button>
                     </div>

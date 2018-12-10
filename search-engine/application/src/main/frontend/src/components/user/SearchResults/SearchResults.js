@@ -6,7 +6,6 @@ export default class SearchResults extends Component {
     }
 
     render() {
-        console.log(this.props.searchResults)
         return (
             <div className="list-group">
                 {this.props.searchResults.map(result => (

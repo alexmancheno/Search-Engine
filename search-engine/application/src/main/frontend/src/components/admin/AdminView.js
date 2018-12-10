@@ -15,7 +15,7 @@ export default class AdminView extends Component {
                 <br />
                 <IndexedPages/>
                 <br />
-                <UserSearchQueries />
+                <UserSearchQueries/>
                 <br />
                 <DatabaseInformation />
             </div>

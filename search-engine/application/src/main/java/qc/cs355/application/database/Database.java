@@ -227,7 +227,7 @@ public class Database {
             String[] splitQuery = search.split("\\s+");
             System.out.println("splitQuery: " + Arrays.toString(splitQuery));
             //Build base query
-            StringBuilder query = new StringBuilder("SELECT DISTINCT WP.webPageLink from WebPages AS WP INNER JOIN Frequencies AS F"
+            StringBuilder query = new StringBuilder("SELECT DISTINCT WP.webPageLink, F.frequency from WebPages AS WP INNER JOIN Frequencies AS F"
                                                     + " ON  WP.idWebPage = F.idWebPage INNER JOIN (SELECT * FROM Words WHERE");
 
             int sizeOfSearch = splitQuery.length;

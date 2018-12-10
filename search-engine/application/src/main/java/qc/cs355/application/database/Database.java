@@ -259,7 +259,30 @@ public class Database {
         return result;
     }
 
+    // public static List<String> getIndexedPages(){
+    //     List<String> result = new ArrayList<>();
+    //     Connection conn = null;
+    //     PreparedStatement stmnt = null;
+    //     ResultSet rs = null;
+    //     try{
+    //         stmnt = conn.prepareStatement("SELECT webPageLink FROM Webpages");
+    //         rs = stmnt.executeQuery();
+    //         while(rs.next()){
+    //             result.add(rs.getString(1));
+    //         }
+    //     }catch(SQLException ex){
 
+    //     }catch(Exception ex){
+
+    //     }finally{
+    //         try{
+    //             rs.close();
+    //             stmnt.close();
+    //             conn.close();
+    //         }catch(SQLException ex){}
+    //     }
+    //     return result;
+    // }
 
 
 }

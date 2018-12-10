@@ -11,7 +11,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------------------------------------------------------
 -- Schema PhatSearch
 -- ----------------------------------------------------------------------------
---DROP SCHEMA IF EXISTS `PhatSearch` ;
+-- DROP SCHEMA IF EXISTS `PhatSearch` ;
 CREATE SCHEMA IF NOT EXISTS `PhatSearch` ;
 
 -- ----------------------------------------------------------------------------

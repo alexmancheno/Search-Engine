@@ -2,7 +2,9 @@ package qc.cs355.application.database;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -159,7 +161,6 @@ public class Database {
         }
     }
 
-
     public static boolean isWebPageInDatabase(String url) {
         boolean isInDatabase = false;
         try {
@@ -223,6 +224,15 @@ public class Database {
         try{
             Connection conn = null;
             conn = DriverManager.getConnection(host, user, pass);
+            PreparedStatement addToQueriesTable = conn.prepareStatement("INSERT INTO Queries(query) values(?) ON DUPLICATE KEY UPDATE counter = counter+1");
+            addToQueriesTable.setString(1, search);
+            try{
+                addToQueriesTable.execute();
+            }catch(Exception ex){
+                System.out.println("Error adding to Queries Table:" + ex.getMessage());
+            }
+            
+            
             //Split by spaces
             String[] splitQuery = search.split("\\s+");
             //System.out.println("splitQuery: " + Arrays.toString(splitQuery));
@@ -236,6 +246,7 @@ public class Database {
             for(int i = 0; i < sizeOfSearch; ++i ){
                 query.append(" word = ? OR");
             }
+
             query.setLength(query.length() - 2);
 
             query.append(") AS W ON W.idWord = F.idWord ORDER BY F.frequency DESC;");
@@ -261,7 +272,105 @@ public class Database {
         return result;
     }
 
+    public static List<String> getIndexedPages(int num){
+        List<String> result = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        try{
+            conn = DriverManager.getConnection(host, user, pass);
+            stmnt = conn.prepareStatement("SELECT webPageLink FROM PhatSearch.WebPages LIMIT ?");
+            stmnt.setInt(1, num);
+            rs = stmnt.executeQuery();
+            while(rs.next()){
+                result.add(rs.getString(1));
+            }
 
+        }catch(SQLException ex){
+            //System.out.println("SQLException: " + ex.getMessage());
+            //System.out.println("SQLState: " + ex.getSQLState());
+            //System.out.println("VendorError: " + ex.getErrorCode());
+
+        }catch(Exception ex){
+            //System.out.println("Error in search: " + ex.getMessage());
+        }
+        return result;
+    }
+
+    public static Map<String, Integer> getUserSearchQueries(){
+        Map<String, Integer> result = new HashMap<>();
+        Connection conn = null;
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        try{
+            conn = DriverManager.getConnection(host, user, pass);
+            stmnt = conn.prepareStatement("SELECT Q.query, Q.counter FROM Queries AS Q");
+            rs = stmnt.executeQuery();
+            while(rs.next()){
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            //System.out.println("NUMBER OF Qs: "+ result.size() );
+        }catch(Exception ex){
+            //
+        }finally{
+            try{
+                rs.close();
+                stmnt.close();
+                conn.close();
+            }catch(Exception ex){
+                //
+            }
+        }
+
+        return result;
+    }
+
+    public static Map<String, Object> getDatabaseInformation(){
+        Map<String, Object> result = new HashMap<>();
+        Connection conn = null;
+        PreparedStatement stmntForNumberOfQueries = null;
+        PreparedStatement stmntForMostSearchQuery = null;
+        ResultSet resultForNumberOfQueries = null;
+        ResultSet resultForMostSearchedQuery = null;
+        File file = new File("/");
+        result.put("Space Usage", file.getUsableSpace());
+        try{       
+            conn = DriverManager.getConnection(host, user, pass);
+            stmntForNumberOfQueries = conn.prepareStatement("SELECT SUM(counter) FROM Queries;");
+            resultForNumberOfQueries = stmntForNumberOfQueries.executeQuery();
+            resultForNumberOfQueries.first();
+            long numberOfQueries = resultForNumberOfQueries.getLong(1);
+            result.put("Number of queries", numberOfQueries);
+            stmntForMostSearchQuery = conn.prepareStatement("SELECT Q.query, MAX(counter) FROM PhatSearch.Queries AS Q;");
+            resultForMostSearchedQuery = stmntForMostSearchQuery.executeQuery();
+            resultForMostSearchedQuery.first();
+            String mostSearchedQuery = resultForMostSearchedQuery.getString(1);
+            result.put("Most frequent search", mostSearchedQuery);
+        }catch(SQLException ex){
+                //System.out.println("SQLException: " + ex.getMessage());
+                //System.out.println("SQLState: " + ex.getSQLState());
+                //System.out.println("VendorError: " + ex.getErrorCode());
+        }catch(Exception ex){
+            //System.out.println("Exception: " + ex.getMessage());
+
+        }finally{
+            try{
+                resultForNumberOfQueries.close();
+                resultForMostSearchedQuery.close();
+                stmntForNumberOfQueries.close();
+                stmntForMostSearchQuery.close();
+                conn.close();
+            }catch (SQLException ex) {
+                //System.out.println("SQLException: " + ex.getMessage());
+                //System.out.println("SQLState: " + ex.getSQLState());
+                //System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (Exception ex) {
+                //System.out.println("Exception: " + ex.getMessage());
+            }
+            
+        }
+        return result;
+    }
 
 
 }

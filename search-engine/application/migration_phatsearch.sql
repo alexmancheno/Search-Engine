@@ -2,7 +2,7 @@
 -- MySQL Workbench Migration
 -- Migrated Schemata: PhatSearch
 -- Source Schemata: PhatSearch
--- Created: Sat Dec  8 14:52:30 2018
+-- Created: Mon Dec 10 23:53:54 2018
 -- Workbench Version: 8.0.13
 -- ----------------------------------------------------------------------------
 
@@ -18,11 +18,10 @@ CREATE SCHEMA IF NOT EXISTS `PhatSearch` ;
 -- Table PhatSearch.Frequencies
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `PhatSearch`.`Frequencies` (
-  `idFrequency` INT(11) NOT NULL AUTO_INCREMENT,
   `idWebPage` INT(11) NOT NULL,
   `idWord` INT(11) NOT NULL,
   `frequency` INT(11) NOT NULL,
-  PRIMARY KEY (`idFrequency`),
+  PRIMARY KEY (`idWebPage`, `idWord`),
   INDEX `FK_Frequencies_WebPages_idx` (`idWebPage` ASC),
   INDEX `FK_Frequencies_Words_idx` (`idWord` ASC),
   CONSTRAINT `FK_Frequencies_WebPages`
@@ -36,7 +35,19 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`Frequencies` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = latin1;
+
+-- ----------------------------------------------------------------------------
+-- Table PhatSearch.Queries
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `PhatSearch`.`Queries` (
+  `idQuery` INT(11) NOT NULL AUTO_INCREMENT,
+  `query` VARCHAR(100) NOT NULL,
+  `counter` INT(10) UNSIGNED NOT NULL DEFAULT '1',
+  PRIMARY KEY (`idQuery`),
+  UNIQUE INDEX `query_UNIQUE` (`query` ASC))
+ENGINE = InnoDB
+AUTO_INCREMENT = 6
 DEFAULT CHARACTER SET = latin1;
 
 -- ----------------------------------------------------------------------------
@@ -48,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`WebPages` (
   PRIMARY KEY (`idWebPage`),
   UNIQUE INDEX `webPageLink_UNIQUE` (`webPageLink`(255) ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 51
+AUTO_INCREMENT = 174
 DEFAULT CHARACTER SET = latin1;
 
 -- ----------------------------------------------------------------------------
@@ -60,11 +71,11 @@ CREATE TABLE IF NOT EXISTS `PhatSearch`.`Words` (
   PRIMARY KEY (`idWord`),
   UNIQUE INDEX `word_UNIQUE` (`word`(255) ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 6
+AUTO_INCREMENT = 17017
 DEFAULT CHARACTER SET = latin1;
 
 -- ----------------------------------------------------------------------------
--- Routine PhatSearch.insertFrequecy
+-- Routine PhatSearch.insertFrequency
 -- ----------------------------------------------------------------------------
 DELIMITER $$
 

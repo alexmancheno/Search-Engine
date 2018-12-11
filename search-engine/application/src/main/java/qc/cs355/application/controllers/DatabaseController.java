@@ -40,51 +40,51 @@ public class DatabaseController {
     @RequestMapping("/getIndexedPages")
     @CrossOrigin(origins = "http://localhost:8081")
     public String getIndexedPages() {
-        // List<String> results = Database.getIndexedPages(100);
-        List<String> results = new ArrayList<>();
-        results.add("a");
-        results.add("b");
-        results.add("c");
-        results.add("a");
-        results.add("b");
-        results.add("c");
-        results.add("a");
-        results.add("b");
-        results.add("c");
-        results.add("a");
-        results.add("b");
-        results.add("c");
+        List<String> results = Database.getIndexedPages(100);
+        // List<String> results = new ArrayList<>();
+        // results.add("a");
+        // results.add("b");
+        // results.add("c");
+        // results.add("a");
+        // results.add("b");
+        // results.add("c");
+        // results.add("a");
+        // results.add("b");
+        // results.add("c");
+        // results.add("a");
+        // results.add("b");
+        // results.add("c");
         return new Gson().toJson(results);
     }
 
     @RequestMapping("/getUserSearchQueries")
     @CrossOrigin(origins = "http://localhost:8081")
     public String getUserSearchQueries() {
-        // Map<String, Integer> results = Database.getUserSearchQueries();
-        Map<String, Integer> results = new HashMap<>();
-        results.put("a", 2);
-        results.put("b", 1);
-        results.put("c", 5);
-        results.put("a", 2);
-        results.put("aa", 1);
-        results.put("csd", 5);
-        results.put("adsa", 2);
-        results.put("dasdb", 1);
-        results.put("cdsfs", 5);
-        results.put("aasdfad", 2);
-        results.put("adfasb", 1);
-        results.put("afdsc", 5);
+        Map<String, Integer> results = Database.getUserSearchQueries();
+        // Map<String, Integer> results = new HashMap<>();
+        // results.put("a", 2);
+        // results.put("b", 1);
+        // results.put("c", 5);
+        // results.put("a", 2);
+        // results.put("aa", 1);
+        // results.put("csd", 5);
+        // results.put("adsa", 2);
+        // results.put("dasdb", 1);
+        // results.put("cdsfs", 5);
+        // results.put("aasdfad", 2);
+        // results.put("adfasb", 1);
+        // results.put("afdsc", 5);
         return new Gson().toJsonTree(results).toString();
     }
 
     @RequestMapping("/getDatabaseInformation")
     @CrossOrigin(origins = "http://localhost:8081")
     public String getDatabaseInformation() {
-        // Map<String, Object> results = Database.getDatabaseInformation();
-        Map<String, Object> results = new HashMap<>();
-        results.put("Space usage", 124231);
-        results.put("Number of searches so far", 1);
-        results.put("Most frequent search", "why am I the way I am?");
+        Map<String, Object> results = Database.getDatabaseInformation();
+        //Map<String, Object> results = new HashMap<>();
+        //results.put("Space usage", 124231);
+        //results.put("Number of searches so far", 1);
+        //results.put("Most frequent search", "why am I the way I am?");
         return new Gson().toJsonTree(results).toString();
     }
 

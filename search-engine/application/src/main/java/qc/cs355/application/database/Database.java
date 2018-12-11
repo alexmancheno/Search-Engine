@@ -2,7 +2,9 @@ package qc.cs355.application.database;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -26,11 +28,11 @@ public class Database {
             //Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn  = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306", user, pass);
-            System.out.println("CONNECTED TO MYSQL");
+            //System.out.println("CONNECTED TO MYSQL");
             PreparedStatement checkIfSchemaExist = conn.prepareStatement("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'PhatSearch'");
             ResultSet rs = checkIfSchemaExist.executeQuery();
             if(!rs.first()){   
-                System.out.println("Migrating to local database");
+                //System.out.println("Migrating to local database");
                 ScriptRunner runner = new ScriptRunner(conn, false, false);
                 runner.runScript(new BufferedReader(new FileReader("migration_phatsearch.sql")));
             }
@@ -39,11 +41,11 @@ public class Database {
             rs.close();
             conn.close();
         }catch(SQLException ex){
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: "     + ex.getSQLState());
-            System.out.println("VendorError: "  + ex.getErrorCode());
+            //System.out.println("SQLException: " + ex.getMessage());
+            //System.out.println("SQLState: "     + ex.getSQLState());
+            //System.out.println("VendorError: "  + ex.getErrorCode());
         }catch(Exception ex){
-            System.out.println("Error in migrating Database: " + ex.getMessage());
+            //System.out.println("Error in migrating Database: " + ex.getMessage());
         }
     }
 
@@ -54,16 +56,16 @@ public class Database {
             // broken Java implementations
             
             conn = DriverManager.getConnection(host, user, pass);
-            System.out.println(conn.getMetaData());
-            System.out.println("Created instance of connection!!!");
+            //System.out.println(conn.getMetaData());
+            //System.out.println("Created instance of connection!!!");
             conn.close();
         } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            //System.out.println("SQLException: " + ex.getMessage());
+            //System.out.println("SQLState: " + ex.getSQLState());
+            //System.out.println("VendorError: " + ex.getErrorCode());
         } catch (Exception ex) {
             // handle any errors
-            System.out.println("Exception: " + ex.getMessage());
+            //System.out.println("Exception: " + ex.getMessage());
         }
     }
 
@@ -96,33 +98,33 @@ public class Database {
                 try{
                     insertingPage.execute();
                 }catch(SQLException ex){
-                    System.out.println("VendorError: "  + ex.getErrorCode());
+                    //System.out.println("VendorError: "  + ex.getErrorCode());
                 }
-                System.out.println("Inserted Page");
+                //System.out.println("Inserted Page");
                 int pageID = insertingPage.getInt(2);
-                System.out.println(pageID);
+                //System.out.println(pageID);
                 for (Map.Entry<String, Integer> word : page.keywords.entrySet()) {
                     // Adding to the Words table
                     if( word.getKey().length() == 0){continue;}
                     int wordId = isWordInDatabase(word.getKey());
                     if(wordId == -1 ){
                         insertingWord.setString(1, word.getKey());
-                        System.out.println("THIS IS THE WORD: "+ word.getKey().length());
+                        //System.out.println("THIS IS THE WORD: "+ word.getKey().length());
                         insertingWord.registerOutParameter(2, Types.INTEGER);
-                        System.out.println("INSERTING WORD----:"+ word.getKey());
+                        //System.out.println("INSERTING WORD----:"+ word.getKey());
                         try{
                             insertingWord.execute();
                          }catch(SQLException ex){
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: "     + ex.getSQLState());
-                            System.out.println("VendorError: "  + ex.getErrorCode());
+                            //System.out.println("SQLException: " + ex.getMessage());
+                            //System.out.println("SQLState: "     + ex.getSQLState());
+                            //System.out.println("VendorError: "  + ex.getErrorCode());
                             //  if(ex.getErrorCode() == 1048){
                             //      insertingWord.clearParameters();
                             //      continue;
                             //  }
                          }        
                         wordId = insertingWord.getInt(2);
-                        System.out.println("INSERTING WORD FREQ---pageID:"+pageID+", wordId:"+wordId+", freq:"+ word.getValue());
+                        //System.out.println("INSERTING WORD FREQ---pageID:"+pageID+", wordId:"+wordId+", freq:"+ word.getValue());
                     } 
 
                     // Add to Frequencies table
@@ -132,9 +134,9 @@ public class Database {
                     try{
                         insertingFrequency.execute();
                     } catch (SQLException ex) {
-                        System.out.println("SQLException: " + ex.getMessage());
-                        System.out.println("SQLState: " + ex.getSQLState());
-                        System.out.println("VendorError: " + ex.getErrorCode());
+                        //System.out.println("SQLException: " + ex.getMessage());
+                        //System.out.println("SQLState: " + ex.getSQLState());
+                        //System.out.println("VendorError: " + ex.getErrorCode());
                     }
 
                     // clear parameters for next iteration
@@ -142,11 +144,11 @@ public class Database {
                     insertingFrequency.clearParameters();
                 } 
             } catch (SQLException ex) {
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
+                //System.out.println("SQLException: " + ex.getMessage());
+                //System.out.println("SQLState: " + ex.getSQLState());
+                //System.out.println("VendorError: " + ex.getErrorCode());
             } catch (Exception ex) {
-                System.out.println("Error in inserting scrape results: " + ex.getMessage());
+                //System.out.println("Error in inserting scrape results: " + ex.getMessage());
             }finally{
                     dropFreqForUrl.close();
                     insertingPage.close();
@@ -155,10 +157,9 @@ public class Database {
                     conn.close();      
             }
         }catch(Exception ex){
-            System.out.println("Error closed" + ex.getMessage());
+            //System.out.println("Error closed" + ex.getMessage());
         }
     }
-
 
     public static boolean isWebPageInDatabase(String url) {
         boolean isInDatabase = false;
@@ -175,11 +176,11 @@ public class Database {
             stmnt.close();
             conn.close();
         } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            //System.out.println("SQLException: " + ex.getMessage());
+            //System.out.println("SQLState: " + ex.getSQLState());
+            //System.out.println("VendorError: " + ex.getErrorCode());
         } catch (Exception ex) {
-            System.out.println("Error in is webpage in database " + ex.getMessage());
+            //System.out.println("Error in is webpage in database " + ex.getMessage());
         }
         return isInDatabase;
     }
@@ -202,18 +203,18 @@ public class Database {
                 stmnt.close();
                 conn.close();
             } catch (SQLException ex) {
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
+                //System.out.println("SQLException: " + ex.getMessage());
+                //System.out.println("SQLState: " + ex.getSQLState());
+                //System.out.println("VendorError: " + ex.getErrorCode());
             } catch (Exception ex) {
-                System.out.println("Error in is webpage in database " + ex.getMessage());
+                //System.out.println("Error in is webpage in database " + ex.getMessage());
             }finally{
                 res.close();
                 stmnt.close();
                 conn.close();
             }
         }catch(Exception ex){
-            System.out.println("Error closed" + ex.getMessage());
+            //System.out.println("Error closed" + ex.getMessage());
         }
         return result;
     }
@@ -223,9 +224,18 @@ public class Database {
         try{
             Connection conn = null;
             conn = DriverManager.getConnection(host, user, pass);
+            PreparedStatement addToQueriesTable = conn.prepareStatement("INSERT INTO Queries(query) values(?) ON DUPLICATE KEY UPDATE counter = counter+1");
+            addToQueriesTable.setString(1, search);
+            try{
+                addToQueriesTable.execute();
+            }catch(Exception ex){
+                System.out.println("Error adding to Queries Table:" + ex.getMessage());
+            }
+            
+            
             //Split by spaces
             String[] splitQuery = search.split("\\s+");
-            System.out.println("splitQuery: " + Arrays.toString(splitQuery));
+            //System.out.println("splitQuery: " + Arrays.toString(splitQuery));
             //Build base query
             StringBuilder query = new StringBuilder("SELECT DISTINCT WP.webPageLink, F.frequency from WebPages AS WP INNER JOIN Frequencies AS F"
                                                     + " ON  WP.idWebPage = F.idWebPage INNER JOIN (SELECT * FROM Words WHERE");
@@ -236,10 +246,11 @@ public class Database {
             for(int i = 0; i < sizeOfSearch; ++i ){
                 query.append(" word = ? OR");
             }
+
             query.setLength(query.length() - 2);
 
             query.append(") AS W ON W.idWord = F.idWord ORDER BY F.frequency DESC;");
-            System.out.println("Final query: " + query.toString());
+            //System.out.println("Final query: " + query.toString());
             PreparedStatement stmnt = conn.prepareStatement(query.toString()); 
             for(int i = 0; i < sizeOfSearch; ++i ){
                 stmnt.setString(i+1, splitQuery[i]);
@@ -252,39 +263,114 @@ public class Database {
             stmnt.close();
             conn.close();
         } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            //System.out.println("SQLException: " + ex.getMessage());
+            //System.out.println("SQLState: " + ex.getSQLState());
+            //System.out.println("VendorError: " + ex.getErrorCode());
         } catch (Exception ex) {
-            System.out.println("Error in search: " + ex.getMessage());
+            //System.out.println("Error in search: " + ex.getMessage());
         }
         return result;
     }
 
-    // public static List<String> getIndexedPages(){
-    //     List<String> result = new ArrayList<>();
-    //     Connection conn = null;
-    //     PreparedStatement stmnt = null;
-    //     ResultSet rs = null;
-    //     try{
-    //         stmnt = conn.prepareStatement("SELECT webPageLink FROM Webpages");
-    //         rs = stmnt.executeQuery();
-    //         while(rs.next()){
-    //             result.add(rs.getString(1));
-    //         }
-    //     }catch(SQLException ex){
+    public static List<String> getIndexedPages(int num){
+        List<String> result = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        try{
+            conn = DriverManager.getConnection(host, user, pass);
+            stmnt = conn.prepareStatement("SELECT webPageLink FROM PhatSearch.WebPages LIMIT ?");
+            stmnt.setInt(1, num);
+            rs = stmnt.executeQuery();
+            while(rs.next()){
+                result.add(rs.getString(1));
+            }
 
-    //     }catch(Exception ex){
+        }catch(SQLException ex){
+            //System.out.println("SQLException: " + ex.getMessage());
+            //System.out.println("SQLState: " + ex.getSQLState());
+            //System.out.println("VendorError: " + ex.getErrorCode());
 
-    //     }finally{
-    //         try{
-    //             rs.close();
-    //             stmnt.close();
-    //             conn.close();
-    //         }catch(SQLException ex){}
-    //     }
-    //     return result;
-    // }
+        }catch(Exception ex){
+            //System.out.println("Error in search: " + ex.getMessage());
+        }
+        return result;
+    }
+
+    public static Map<String, Integer> getUserSearchQueries(){
+        Map<String, Integer> result = new HashMap<>();
+        Connection conn = null;
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        try{
+            conn = DriverManager.getConnection(host, user, pass);
+            stmnt = conn.prepareStatement("SELECT Q.query, Q.counter FROM Queries AS Q");
+            rs = stmnt.executeQuery();
+            while(rs.next()){
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            //System.out.println("NUMBER OF Qs: "+ result.size() );
+        }catch(Exception ex){
+            //
+        }finally{
+            try{
+                rs.close();
+                stmnt.close();
+                conn.close();
+            }catch(Exception ex){
+                //
+            }
+        }
+
+        return result;
+    }
+
+    public static Map<String, Object> getDatabaseInformation(){
+        Map<String, Object> result = new HashMap<>();
+        Connection conn = null;
+        PreparedStatement stmntForNumberOfQueries = null;
+        PreparedStatement stmntForMostSearchQuery = null;
+        ResultSet resultForNumberOfQueries = null;
+        ResultSet resultForMostSearchedQuery = null;
+        File file = new File("/");
+        result.put("Space Usage", file.getUsableSpace());
+        try{       
+            conn = DriverManager.getConnection(host, user, pass);
+            stmntForNumberOfQueries = conn.prepareStatement("SELECT SUM(counter) FROM Queries;");
+            resultForNumberOfQueries = stmntForNumberOfQueries.executeQuery();
+            resultForNumberOfQueries.first();
+            long numberOfQueries = resultForNumberOfQueries.getLong(1);
+            result.put("Number of queries", numberOfQueries);
+            stmntForMostSearchQuery = conn.prepareStatement("SELECT Q.query, MAX(counter) FROM PhatSearch.Queries AS Q;");
+            resultForMostSearchedQuery = stmntForMostSearchQuery.executeQuery();
+            resultForMostSearchedQuery.first();
+            String mostSearchedQuery = resultForMostSearchedQuery.getString(1);
+            result.put("Most frequent search", mostSearchedQuery);
+        }catch(SQLException ex){
+                //System.out.println("SQLException: " + ex.getMessage());
+                //System.out.println("SQLState: " + ex.getSQLState());
+                //System.out.println("VendorError: " + ex.getErrorCode());
+        }catch(Exception ex){
+            //System.out.println("Exception: " + ex.getMessage());
+
+        }finally{
+            try{
+                resultForNumberOfQueries.close();
+                resultForMostSearchedQuery.close();
+                stmntForNumberOfQueries.close();
+                stmntForMostSearchQuery.close();
+                conn.close();
+            }catch (SQLException ex) {
+                //System.out.println("SQLException: " + ex.getMessage());
+                //System.out.println("SQLState: " + ex.getSQLState());
+                //System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (Exception ex) {
+                //System.out.println("Exception: " + ex.getMessage());
+            }
+            
+        }
+        return result;
+    }
 
 
 }

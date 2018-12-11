@@ -1,4 +1,4 @@
-import React,  {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import style from './style.css';
 
@@ -14,7 +14,7 @@ export default class SearchBar extends Component {
     }
 
     handleSearchQueryChange(event) {
-        this.setState({searchQuery: event.target.value});
+        this.setState({ searchQuery: event.target.value });
     }
 
     runPhatSearch() {
@@ -25,20 +25,18 @@ export default class SearchBar extends Component {
                 query: this.state.searchQuery
             }
         }).then(res => {
-            console.log('RES: ' + JSON.stringify(res));
+            // console.log('RES: ' + JSON.stringify(res));
             this.props.onSearch(res.data);
         }).catch(error => {
             console.log(error);
         })
-        
-        
     }
 
     render() {
         return (
             <div className={style.main} >
                 <div className="input-group">
-                    <input type="text" className="form-control" placeholder="Get a phat search" 
+                    <input type="text" className="form-control" placeholder="Get a phat search"
                         value={this.state.searchQuery} onChange={e => this.handleSearchQueryChange(e)}
                     />
                     <div className="input-group-append">
